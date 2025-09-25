@@ -254,7 +254,7 @@ If you encounter issues:
 - Hover over the instruction steps for animations
 - Watch for smooth transitions and cute loading animations
 
-## � Deployment Status
+## 🪄 Deployment Status
 
 - ✅ **Vercel Ready**: Optimized for serverless deployment
 - ✅ **Local Development**: Works perfectly in local environment
@@ -263,7 +263,7 @@ If you encounter issues:
 - ✅ **Error Handling**: Comprehensive error management
 - ✅ **File Processing**: Supports multiple Instagram export formats
 
-## �📄 License
+## 📄 License
 
 This project is open source and available under the MIT License.
 
@@ -274,7 +274,7 @@ Feel free to submit issues, feature requests, or pull requests!
 ### Repository
 
 - **GitHub**: [github.com/eppm27/WhoUnfollowed](https://github.com/eppm27/WhoUnfollowed)
-- **Live Demo**: [Your Vercel URL]
+- **Live Demo**: (https://who-unfollowed.vercel.app/)
 
 ---
 
