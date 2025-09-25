@@ -4,9 +4,11 @@ import csv
 import io
 import os
 
-# For Vercel deployment, we need to use a relative path for templates
-template_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'views')
-static_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'static')
+# For Vercel deployment, we need to use absolute paths for templates
+current_dir = os.path.dirname(os.path.abspath(__file__))
+project_root = os.path.dirname(current_dir)
+template_dir = os.path.join(project_root, 'templates')
+static_dir = os.path.join(project_root, 'static')
 
 app = Flask(__name__, template_folder=template_dir, static_folder=static_dir)
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
@@ -134,10 +136,9 @@ def download_csv_data():
     except Exception as e:
         return jsonify({'error': f'Download failed: {str(e)}'}), 500
 
-# This is the entry point for Vercel
-def handler(request):
-    return app(request.environ, lambda *args: None)
-
 # For local testing
 if __name__ == '__main__':
     app.run(debug=True)
+
+# This is the entry point for Vercel
+app = app
