@@ -17,7 +17,7 @@ A cute and user-friendly web application to analyze your Instagram followers and
 
 ### Live Demo
 
-Visit the live application: (https://who-unfollowed.vercel.app/)
+Visit the live application: https://who-unfollowed.vercel.app/
 
 ### Local Development
 
