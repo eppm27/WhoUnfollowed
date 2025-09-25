@@ -4,7 +4,11 @@ import csv
 import io
 import os
 
-app = Flask(__name__, template_folder='templates')
+# For Vercel deployment, we need to use a relative path for templates
+template_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'views')
+static_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'static')
+
+app = Flask(__name__, template_folder=template_dir, static_folder=static_dir)
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
 
 def load_usernames_from_json_data(data):
@@ -130,9 +134,10 @@ def download_csv_data():
     except Exception as e:
         return jsonify({'error': f'Download failed: {str(e)}'}), 500
 
+# This is the entry point for Vercel
+def handler(request):
+    return app(request.environ, lambda *args: None)
+
+# For local testing
 if __name__ == '__main__':
-    # Create templates and static directories if they don't exist
-    os.makedirs('templates', exist_ok=True)
-    os.makedirs('static', exist_ok=True)
-    
-    app.run(debug=True, host='0.0.0.0', port=5001)
+    app.run(debug=True)
