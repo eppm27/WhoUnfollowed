@@ -10,16 +10,27 @@ if ! command -v python3 &> /dev/null; then
     exit 1
 fi
 
-# Check if pip is installed
-if ! command -v pip3 &> /dev/null; then
-    echo "❌ pip3 is not installed. Please install pip3."
-    exit 1
+# Create virtual environment if it doesn't exist
+if [ ! -d ".venv" ]; then
+    echo "🔧 Creating virtual environment..."
+    python3 -m venv .venv
 fi
+
+# Activate virtual environment
+echo "🔄 Activating virtual environment..."
+source .venv/bin/activate
+
+# Upgrade pip in virtual environment
+echo "⬆️ Upgrading pip..."
+pip install --upgrade pip
 
 # Install dependencies if requirements.txt exists
 if [ -f "requirements.txt" ]; then
     echo "📦 Installing dependencies..."
-    pip3 install -r requirements.txt
+    pip install -r requirements.txt
+else
+    echo "⚠️ No requirements.txt found. Installing Flask manually..."
+    pip install Flask==2.3.3 Werkzeug==2.3.7
 fi
 
 # Start the application
@@ -29,4 +40,4 @@ echo ""
 echo "Press Ctrl+C to stop the application"
 echo ""
 
-python3 app.py
+python app.py
