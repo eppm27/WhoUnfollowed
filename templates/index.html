@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📱 Instagram Follower Analyzer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="logo">
+                <i class="fab fa-instagram"></i>
+                <h1>Follower Analyzer</h1>
+            </div>
+            <p class="subtitle">🔍 Discover who doesn't follow you back and manage your connections!</p>
+        </header>
+
+        <!-- Instructions Section -->
+        <div class="instructions-card">
+            <h2><i class="fas fa-info-circle"></i> How to Get Your Instagram Data</h2>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>📱 Open Instagram</h3>
+                        <p>Go to your Instagram app or visit instagram.com</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>⚙️ Navigate to Settings</h3>
+                        <p>Settings → Accounts Center → Your information & permissions</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>💾 Download Your Information</h3>
+                        <p>Download your information → Some of your information</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>👥 Select Data Type</h3>
+                        <p>Select <strong>"Followers and following"</strong> → Format: JSON → Download to device</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">5</div>
+                    <div class="step-content">
+                        <h3>📧 Wait for Email</h3>
+                        <p>Create files and wait for the download link (may take a while!)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="tip">
+                <i class="fas fa-lightbulb"></i>
+                <p><strong>Tip:</strong> After downloading, extract the ZIP file and look for the <code>followers_and_following</code> folder!</p>
+            </div>
+        </div>
+
+        <!-- Upload Section -->
+        <div class="upload-section">
+            <h2><i class="fas fa-cloud-upload-alt"></i> Upload Your Files</h2>
+            <div class="upload-grid">
+                <div class="upload-card">
+                    <div class="upload-area" id="following-upload">
+                        <i class="fas fa-user-plus"></i>
+                        <h3>Following List</h3>
+                        <p>Upload your <code>following.json</code> file</p>
+                        <input type="file" id="following-file" accept=".json" hidden>
+                        <button class="upload-btn" onclick="document.getElementById('following-file').click()">
+                            Choose File
+                        </button>
+                        <div class="file-status" id="following-status"></div>
+                    </div>
+                </div>
+                
+                <div class="upload-card">
+                    <div class="upload-area" id="followers-upload">
+                        <i class="fas fa-users"></i>
+                        <h3>Followers List</h3>
+                        <p>Upload your <code>followers_1.json</code> file</p>
+                        <input type="file" id="followers-file" accept=".json" hidden>
+                        <button class="upload-btn" onclick="document.getElementById('followers-file').click()">
+                            Choose File
+                        </button>
+                        <div class="file-status" id="followers-status"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="analyze-section">
+                <button class="analyze-btn" id="analyze-btn" disabled>
+                    <i class="fas fa-chart-line"></i>
+                    Analyze My Followers
+                </button>
+            </div>
+        </div>
+
+        <!-- Loading Section -->
+        <div class="loading-section" id="loading-section" style="display: none;">
+            <div class="loading-spinner">
+                <i class="fas fa-sync-alt fa-spin"></i>
+            </div>
+            <p>Analyzing your follower data...</p>
+        </div>
+
+        <!-- Results Section -->
+        <div class="results-section" id="results-section" style="display: none;">
+            <h2><i class="fas fa-chart-bar"></i> Analysis Results</h2>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="following-count">-</div>
+                    <div class="stat-label">Following</div>
+                    <i class="fas fa-user-plus stat-icon"></i>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="followers-count">-</div>
+                    <div class="stat-label">Followers</div>
+                    <i class="fas fa-users stat-icon"></i>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="not-following-back-count">-</div>
+                    <div class="stat-label">Don't Follow Back</div>
+                    <i class="fas fa-user-times stat-icon"></i>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="i-dont-follow-back-count">-</div>
+                    <div class="stat-label">I Don't Follow Back</div>
+                    <i class="fas fa-user-minus stat-icon"></i>
+                </div>
+            </div>
+
+            <div class="results-grid">
+                <div class="result-card">
+                    <h3><i class="fas fa-user-times"></i> People Who Don't Follow You Back</h3>
+                    <div class="user-list" id="not-following-back-list"></div>
+                    <button class="download-btn" id="download-not-following">
+                        <i class="fas fa-download"></i> Download CSV
+                    </button>
+                </div>
+                
+                <div class="result-card">
+                    <h3><i class="fas fa-user-minus"></i> People You Don't Follow Back</h3>
+                    <div class="user-list" id="i-dont-follow-back-list"></div>
+                    <button class="download-btn" id="download-i-dont-follow">
+                        <i class="fas fa-download"></i> Download CSV
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Made with 💜 for Instagram users who want to manage their connections better!</p>
+            <p><small>This tool processes your data locally and doesn't store any information.</small></p>
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
