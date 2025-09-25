@@ -4,11 +4,10 @@ import csv
 import io
 import os
 
-# For Vercel deployment, we need to use absolute paths for templates
+# For Vercel deployment - calculate paths relative to this file
 current_dir = os.path.dirname(os.path.abspath(__file__))
-project_root = os.path.dirname(current_dir)
-template_dir = os.path.join(project_root, 'templates')
-static_dir = os.path.join(project_root, 'static')
+template_dir = os.path.join(os.path.dirname(current_dir), 'templates')
+static_dir = os.path.join(os.path.dirname(current_dir), 'static')
 
 app = Flask(__name__, template_folder=template_dir, static_folder=static_dir)
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
@@ -49,6 +48,20 @@ def create_csv_data(usernames):
 @app.route('/')
 def index():
     return render_template('index.html')
+
+@app.route('/debug')
+def debug():
+    import os
+    return {
+        'template_folder': app.template_folder,
+        'static_folder': app.static_folder,
+        'template_exists': os.path.exists(app.template_folder),
+        'static_exists': os.path.exists(app.static_folder),
+        'current_dir': os.getcwd(),
+        'file_location': __file__,
+        'templates_list': os.listdir(app.template_folder) if os.path.exists(app.template_folder) else 'Not found',
+        'static_list': os.listdir(app.static_folder) if os.path.exists(app.static_folder) else 'Not found'
+    }
 
 @app.route('/analyze', methods=['POST'])
 def analyze():
@@ -140,5 +153,4 @@ def download_csv_data():
 if __name__ == '__main__':
     app.run(debug=True)
 
-# This is the entry point for Vercel
-app = app
+# For Vercel deployment - the app variable is automatically detected
