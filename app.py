@@ -164,8 +164,8 @@ if __name__ == "__main__":
     os.makedirs("templates", exist_ok=True)
     os.makedirs("static", exist_ok=True)
 
-    print("🚀 Starting Instagram Follower Analyzer...")
-    print("📱 Open your browser and go to: http://localhost:5000")
-    print("🔧 Debug info available at: http://localhost:5000/debug")
+    port = int(os.environ.get("PORT", 5001))
+    print("🚀 Starting Instagram Insights...")
+    print(f"📱 Open your browser and go to: http://localhost:{port}")
 
-    app.run(debug=True, host="0.0.0.0", port=5000)  # Changed back to port 5000
+    app.run(debug=True, host="0.0.0.0", port=port)

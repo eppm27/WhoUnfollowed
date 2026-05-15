@@ -1,4 +1,4 @@
-// Instagram Follower Analyzer - JavaScript functionality
+// Instagram Insights - JavaScript functionality
 document.addEventListener("DOMContentLoaded", function () {
   // Get DOM elements
   const followingFile = document.getElementById("following-file");
@@ -20,7 +20,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     if (file.size > 16 * 1024 * 1024) {
-      // 16MB
       return { valid: false, message: "File too large (max 16MB)" };
     }
 
@@ -28,20 +27,15 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // Update file status
-  function updateFileStatus(
-    statusElement,
-    uploadElement,
-    validation,
-    fileName
-  ) {
+  function updateFileStatus(statusElement, uploadElement, validation, fileName) {
     if (validation.valid) {
-      statusElement.innerHTML = `<i class="fas fa-check-circle"></i> ${fileName} selected`;
+      statusElement.innerHTML = `<i class="fas fa-check-circle"></i> ${fileName}`;
       statusElement.className = "file-status success";
-      uploadElement.parentElement.classList.add("file-uploaded");
+      uploadElement.closest(".upload-card")?.classList.add("file-uploaded");
     } else {
       statusElement.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${validation.message}`;
       statusElement.className = "file-status error";
-      uploadElement.parentElement.classList.remove("file-uploaded");
+      uploadElement.closest(".upload-card")?.classList.remove("file-uploaded");
     }
     checkAnalyzeButton();
   }
@@ -49,11 +43,9 @@ document.addEventListener("DOMContentLoaded", function () {
   // Check if analyze button should be enabled
   function checkAnalyzeButton() {
     const followingValid =
-      followingFile.files.length > 0 &&
-      validateJSONFile(followingFile.files[0]).valid;
+      followingFile.files.length > 0 && validateJSONFile(followingFile.files[0]).valid;
     const followersValid =
-      followersFile.files.length > 0 &&
-      validateJSONFile(followersFile.files[0]).valid;
+      followersFile.files.length > 0 && validateJSONFile(followersFile.files[0]).valid;
 
     analyzeBtn.disabled = !(followingValid && followersValid);
   }
@@ -62,43 +54,33 @@ document.addEventListener("DOMContentLoaded", function () {
   followingFile.addEventListener("change", function () {
     const file = this.files[0];
     const validation = validateJSONFile(file);
-    updateFileStatus(
-      followingStatus,
-      followingUpload,
-      validation,
-      file ? file.name : ""
-    );
+    updateFileStatus(followingStatus, followingUpload, validation, file ? file.name : "");
   });
 
   followersFile.addEventListener("change", function () {
     const file = this.files[0];
     const validation = validateJSONFile(file);
-    updateFileStatus(
-      followersStatus,
-      followersUpload,
-      validation,
-      file ? file.name : ""
-    );
+    updateFileStatus(followersStatus, followersUpload, validation, file ? file.name : "");
   });
 
   // Drag and drop functionality
   function setupDragAndDrop(uploadElement, fileInput) {
     uploadElement.addEventListener("dragover", function (e) {
       e.preventDefault();
-      this.style.backgroundColor = "#f0f0f0";
-      this.style.borderColor = "#833ab4";
+      const card = this.closest(".upload-card");
+      if (card) card.classList.add("drag-over");
     });
 
     uploadElement.addEventListener("dragleave", function (e) {
       e.preventDefault();
-      this.style.backgroundColor = "";
-      this.style.borderColor = "";
+      const card = this.closest(".upload-card");
+      if (card) card.classList.remove("drag-over");
     });
 
     uploadElement.addEventListener("drop", function (e) {
       e.preventDefault();
-      this.style.backgroundColor = "";
-      this.style.borderColor = "";
+      const card = this.closest(".upload-card");
+      if (card) card.classList.remove("drag-over");
 
       const files = e.dataTransfer.files;
       if (files.length > 0) {
@@ -148,37 +130,34 @@ document.addEventListener("DOMContentLoaded", function () {
       // Hide loading
       loadingSection.style.display = "none";
       this.disabled = false;
-      this.innerHTML = '<i class="fas fa-chart-line"></i> Analyze My Followers';
+      this.innerHTML = '<i class="fas fa-sparkles"></i> Analyze My Lists';
     }
   });
 
   // Display results function
   function displayResults(data) {
     // Update stats
-    document.getElementById("following-count").textContent =
-      data.following_count.toLocaleString();
-    document.getElementById("followers-count").textContent =
-      data.followers_count.toLocaleString();
-    document.getElementById("not-following-back-count").textContent =
-      data.not_following_back.count.toLocaleString();
-    document.getElementById("i-dont-follow-back-count").textContent =
-      data.i_dont_follow_back.count.toLocaleString();
+    document.getElementById("following-count").textContent = data.following_count.toLocaleString();
+    document.getElementById("followers-count").textContent = data.followers_count.toLocaleString();
+    document.getElementById("not-following-back-count").textContent = data.not_following_back.count.toLocaleString();
+    document.getElementById("i-dont-follow-back-count").textContent = data.i_dont_follow_back.count.toLocaleString();
+
+    // Update count labels
+    const notFollowingBackCount = data.not_following_back.count;
+    const iDontFollowBackCount = data.i_dont_follow_back.count;
+    
+    document.getElementById("not-following-back-count-label").textContent = 
+      `${notFollowingBackCount} ${notFollowingBackCount === 1 ? 'user' : 'users'}`;
+    document.getElementById("i-dont-follow-back-count-label").textContent = 
+      `${iDontFollowBackCount} ${iDontFollowBackCount === 1 ? 'user' : 'users'}`;
 
     // Display user lists
     displayUserList("not-following-back-list", data.not_following_back.users);
     displayUserList("i-dont-follow-back-list", data.i_dont_follow_back.users);
 
     // Setup download buttons
-    setupDownloadButton(
-      "download-not-following",
-      "not_following_back",
-      data.not_following_back.users
-    );
-    setupDownloadButton(
-      "download-i-dont-follow",
-      "i_dont_follow_back",
-      data.i_dont_follow_back.users
-    );
+    setupDownloadButton("download-not-following", "not_following_back", data.not_following_back.users);
+    setupDownloadButton("download-i-dont-follow", "i_dont_follow_back", data.i_dont_follow_back.users);
 
     // Show results
     resultsSection.style.display = "block";
@@ -191,13 +170,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (users.length === 0) {
       listElement.innerHTML =
-        '<div class="user-item" style="text-align: center; color: #8e8e8e; font-style: italic;">No users found! 🎉</div>';
+        '<div class="user-item" style="text-align: center; color: var(--text-muted); font-style: italic;">No users — great job! 🎉</div>';
       return;
     }
 
-    listElement.innerHTML = users
-      .map((user) => `<div class="user-item">@${user}</div>`)
-      .join("");
+    listElement.innerHTML = users.map((user) => `<div class="user-item">@${user}</div>`).join("");
   }
 
   // Setup download button
@@ -238,107 +215,19 @@ document.addEventListener("DOMContentLoaded", function () {
         // Show success message
         this.innerHTML = '<i class="fas fa-check"></i> Downloaded!';
         setTimeout(() => {
-          this.innerHTML = '<i class="fas fa-download"></i> Download CSV';
+          this.innerHTML = '<i class="fas fa-download"></i> Download List';
         }, 2000);
       } catch (error) {
         console.error("Download error:", error);
         alert("Download failed. Please try again.");
-        this.innerHTML = '<i class="fas fa-download"></i> Download CSV';
+        this.innerHTML = '<i class="fas fa-download"></i> Download List';
       } finally {
         this.disabled = false;
       }
     };
   }
 
-  // Add some fun interactions
-  function addFunInteractions() {
-    // Add hover effects to step cards
-    const steps = document.querySelectorAll(".step");
-    steps.forEach((step, index) => {
-      step.addEventListener("mouseenter", function () {
-        this.style.transform = "translateY(-5px) scale(1.02)";
-      });
-
-      step.addEventListener("mouseleave", function () {
-        this.style.transform = "translateY(0) scale(1)";
-      });
-    });
-
-    // Add click animation to upload buttons
-    const uploadBtns = document.querySelectorAll(".upload-btn");
-    uploadBtns.forEach((btn) => {
-      btn.addEventListener("click", function () {
-        this.style.transform = "scale(0.95)";
-        setTimeout(() => {
-          this.style.transform = "scale(1)";
-        }, 150);
-      });
-    });
-
-    // Add progress indicator for file uploads
-    function showProgress(element) {
-      const progressBar = document.createElement("div");
-      progressBar.className = "progress-bar";
-      progressBar.innerHTML = '<div class="progress-fill"></div>';
-      element.appendChild(progressBar);
-
-      setTimeout(() => {
-        progressBar.querySelector(".progress-fill").style.width = "100%";
-      }, 100);
-
-      setTimeout(() => {
-        progressBar.remove();
-      }, 1000);
-    }
-
-    // Easter egg: Konami code for fun animation
-    let konamiCode = [];
-    const konamiSequence = [38, 38, 40, 40, 37, 39, 37, 39, 66, 65]; // ↑↑↓↓←→←→BA
-
-    document.addEventListener("keydown", function (e) {
-      konamiCode.push(e.keyCode);
-      if (konamiCode.length > konamiSequence.length) {
-        konamiCode.shift();
-      }
-
-      if (konamiCode.join(",") === konamiSequence.join(",")) {
-        document.body.style.animation = "rainbow 2s infinite";
-        setTimeout(() => {
-          document.body.style.animation = "";
-        }, 5000);
-      }
-    });
-  }
-
-  // Initialize fun interactions
-  addFunInteractions();
-
-  // Add some CSS for the progress bar
-  const style = document.createElement("style");
-  style.textContent = `
-        .progress-bar {
-            width: 100%;
-            height: 4px;
-            background: #f0f0f0;
-            border-radius: 2px;
-            margin-top: 10px;
-            overflow: hidden;
-        }
-        
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
-            width: 0%;
-            transition: width 0.8s ease-in-out;
-        }
-        
-        @keyframes rainbow {
-            0% { filter: hue-rotate(0deg); }
-            100% { filter: hue-rotate(360deg); }
-        }
-    `;
-  document.head.appendChild(style);
-
-  console.log("🎉 Instagram Follower Analyzer loaded successfully!");
-  console.log("💡 Tip: Try the Konami code for a surprise! ↑↑↓↓←→←→BA");
+  console.log("✨ Instagram Insights loaded successfully!");
+  console.log("💡 All processing happens locally in your browser — nothing is uploaded.");
 });
+
