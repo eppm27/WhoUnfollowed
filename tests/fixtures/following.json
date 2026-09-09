@@ -1,0 +1,84 @@
+{
+  "relationships_following": [
+    {
+      "title": "alex.chen",
+      "media_list_data": [],
+      "string_list_data": [
+        {
+          "href": "https://www.instagram.com/_u/alex.chen",
+          "timestamp": 1700000000
+        }
+      ]
+    },
+    {
+      "title": "bea.studio",
+      "media_list_data": [],
+      "string_list_data": [
+        {
+          "href": "https://www.instagram.com/_u/bea.studio",
+          "timestamp": 1702592000
+        }
+      ]
+    },
+    {
+      "title": "cameron_lee",
+      "media_list_data": [],
+      "string_list_data": [
+        {
+          "href": "https://www.instagram.com/_u/cameron_lee",
+          "timestamp": 1705184000
+        }
+      ]
+    },
+    {
+      "title": "devon.draws",
+      "media_list_data": [],
+      "string_list_data": [
+        {
+          "href": "https://www.instagram.com/_u/devon.draws",
+          "timestamp": 1707776000
+        }
+      ]
+    },
+    {
+      "title": "ellis.codes",
+      "media_list_data": [],
+      "string_list_data": [
+        {
+          "href": "https://www.instagram.com/_u/ellis.codes",
+          "timestamp": 1710368000
+        }
+      ]
+    },
+    {
+      "title": "frankie.photo",
+      "media_list_data": [],
+      "string_list_data": [
+        {
+          "href": "https://www.instagram.com/_u/frankie.photo",
+          "timestamp": 1712960000
+        }
+      ]
+    },
+    {
+      "title": "garden_notes",
+      "media_list_data": [],
+      "string_list_data": [
+        {
+          "href": "https://www.instagram.com/_u/garden_notes",
+          "timestamp": 1715552000
+        }
+      ]
+    },
+    {
+      "title": "hana.makes",
+      "media_list_data": [],
+      "string_list_data": [
+        {
+          "href": "https://www.instagram.com/_u/hana.makes",
+          "timestamp": 1718144000
+        }
+      ]
+    }
+  ]
+}

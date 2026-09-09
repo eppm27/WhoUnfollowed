@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Analyze Instagram connection exports on your device. Explore mutual and one-way connections, search accounts, and export CSV."
+    />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'"
+    />
+    <meta name="referrer" content="no-referrer" />
+    <title>Instagram Connection Analyzer</title>
+    <link rel="icon" href="/static/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/static/style.css" />
+    <script type="module" src="/src/ui.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to analyzer</a>
+    <div class="shell">
+      <header class="topbar">
+        <span class="header-note">Instagram exports</span>
+        <a href="/" class="brand" aria-label="Connection Analyzer home"
+          >connection analyzer<span aria-hidden="true"> ✳</span></a
+        >
+        <span class="privacy-badge">Local &amp; private</span>
+      </header>
+      <main id="main">
+        <section class="intro" aria-labelledby="title">
+          <p class="eyebrow">A LITTLE CONNECTION CHECK-IN</p>
+          <h1 id="title">
+            Your connections,<br /><span>in a clearer light.</span>
+          </h1>
+          <p>Who follows back. Who doesn’t. Where you connect.</p>
+        </section>
+        <section class="import-panel" aria-labelledby="import-title">
+          <div class="section-heading">
+            <h2 id="import-title">Your two lists, please.</h2>
+            <button id="clear" class="text-button" type="button">
+              Clear all data
+            </button>
+          </div>
+          <div class="upload-grid">
+            <div class="upload-box" id="following-zone">
+              <div class="upload-heading">
+                <h3>Following</h3>
+                <span class="paper-number" aria-hidden="true">01</span>
+              </div>
+              <p>following.json</p>
+              <label class="file-picker"
+                >Choose following file<input
+                  id="following-file"
+                  type="file"
+                  accept=".json,application/json"
+                  aria-label="Choose following file" /></label
+              ><span class="drop-hint">or drop it here · 16 MB max</span>
+              <ul
+                id="following-files"
+                class="files"
+                aria-label="Selected following files"
+              ></ul>
+            </div>
+            <div class="upload-box" id="followers-zone">
+              <div class="upload-heading">
+                <h3>Followers</h3>
+                <span class="paper-number" aria-hidden="true">02</span>
+              </div>
+              <p>All followers_*.json files</p>
+              <label class="file-picker"
+                >Choose followers files<input
+                  id="followers-file"
+                  type="file"
+                  accept=".json,application/json"
+                  multiple
+                  aria-label="Choose followers files" /></label
+              ><span class="drop-hint">or drop them here · 16 MB each</span>
+              <ul
+                id="followers-files"
+                class="files"
+                aria-label="Selected followers files"
+              ></ul>
+            </div>
+          </div>
+          <div class="import-actions">
+            <p class="local-note">Your files stay on your device.</p>
+            <button id="analyze" class="primary" disabled>
+              Analyze connections <span aria-hidden="true">→</span>
+            </button>
+          </div>
+          <p id="error" class="error" role="alert" hidden></p>
+          <details class="help">
+            <summary>Need your Instagram files?</summary>
+            <ol>
+              <li>
+                In Accounts Center, export
+                <strong>Followers and following</strong>.
+              </li>
+              <li>
+                Choose <strong>JSON</strong> and <strong>All time</strong>, then
+                extract the ZIP.
+              </li>
+              <li>
+                Add following.json and every followers_*.json from the same
+                export.
+              </li>
+            </ol>
+            <p>
+              Use a complete export. Missing files or a limited date range can
+              change your results.
+            </p>
+          </details>
+        </section>
+        <p
+          id="status"
+          class="status"
+          role="status"
+          aria-live="polite"
+          aria-atomic="true"
+        ></p>
+        <section
+          id="results"
+          class="results"
+          aria-labelledby="results-title"
+          hidden
+        >
+          <div class="section-heading">
+            <h2 id="results-title" tabindex="-1">Your connection snapshot</h2>
+            <span class="eyebrow">A SNAPSHOT OF YOUR EXPORT</span>
+          </div>
+          <ul
+            id="warnings"
+            class="warnings"
+            aria-label="Data quality notes"
+            hidden
+          ></ul>
+          <div class="metrics">
+            <div class="metric">
+              <h3>Followers</h3>
+              <strong id="followers-count">0</strong>
+            </div>
+            <div class="metric">
+              <h3>Following</h3>
+              <strong id="following-count">0</strong>
+            </div>
+            <div class="metric">
+              <h3>Mutual</h3>
+              <strong id="mutual-count">0</strong>
+            </div>
+            <div class="metric featured">
+              <h3>Reciprocity</h3>
+              <strong id="reciprocity-count">—</strong
+              ><span>of accounts you follow, follow back</span>
+            </div>
+          </div>
+          <div class="list-panel">
+            <div
+              id="tabs"
+              class="tabs"
+              role="tablist"
+              aria-label="Relationship type"
+            >
+              <button
+                role="tab"
+                id="tab-not_following_back"
+                aria-controls="account-panel"
+                aria-selected="true"
+                data-filter="not_following_back"
+              >
+                Not following me back <span></span></button
+              ><button
+                role="tab"
+                id="tab-i_dont_follow_back"
+                aria-controls="account-panel"
+                aria-selected="false"
+                tabindex="-1"
+                data-filter="i_dont_follow_back"
+              >
+                I don’t follow back <span></span></button
+              ><button
+                role="tab"
+                id="tab-mutual"
+                aria-controls="account-panel"
+                aria-selected="false"
+                tabindex="-1"
+                data-filter="mutual"
+              >
+                Mutuals <span></span></button
+              ><button
+                role="tab"
+                id="tab-all"
+                aria-controls="account-panel"
+                aria-selected="false"
+                tabindex="-1"
+                data-filter="all"
+              >
+                All <span></span>
+              </button>
+            </div>
+            <div
+              id="account-panel"
+              role="tabpanel"
+              aria-labelledby="tab-not_following_back"
+              tabindex="0"
+            >
+              <div class="controls">
+                <label class="search-label"
+                  ><span class="sr-only">Search by username</span
+                  ><input
+                    id="search"
+                    type="search"
+                    placeholder="Search username"
+                    autocomplete="off"
+                    spellcheck="false" /></label
+                ><label class="sort-label"
+                  >Sort
+                  <select id="sort" aria-label="Sort">
+                    <option value="az">Username A–Z</option>
+                    <option value="za">Username Z–A</option>
+                    <option value="newest" hidden>Recently followed</option>
+                    <option value="oldest" hidden>Oldest followed</option>
+                  </select></label
+                ><button id="export" class="secondary">Export CSV ↓</button>
+              </div>
+              <div class="list-meta">
+                <span id="result-count" role="status" aria-live="polite"></span
+                ><span id="date-note" hidden
+                  >Follow dates from export · UTC</span
+                >
+              </div>
+              <ul id="accounts" class="accounts" aria-label="Accounts"></ul>
+              <p id="empty" class="empty" hidden>
+                No accounts match. Try another filter or username.
+              </p>
+              <div class="pagination">
+                <button id="previous" class="secondary">Previous</button
+                ><span id="page-count"></span
+                ><button id="next" class="secondary">Next</button>
+              </div>
+            </div>
+          </div>
+          <p class="snapshot-note">
+            A snapshot, not live unfollow tracking. Include every followers file
+            for accurate comparisons.
+          </p>
+        </section>
+      </main>
+      <footer>
+        <span>Independent tool. Not affiliated with Instagram or Meta.</span
+        ><span>No login. No scraping. No Instagram connection.</span>
+      </footer>
+    </div>
+  </body>
+</html>
