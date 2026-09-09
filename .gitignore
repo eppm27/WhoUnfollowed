@@ -178,3 +178,6 @@ htmlcov/
 *.db
 *.sqlite
 *.sqlite3
+# Static build and local tools
+node_modules/
+dist/
